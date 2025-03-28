@@ -45,12 +45,21 @@ public_users.get('/',function (req, res) {
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
   const isbn = req.params.isbn
-  for(const key in books){
-      if(key === isbn){
-          return res.status(200).json(books[key]);
-      }
-  }
-  return res.status(404).json({message: "Book not found."});
+  const findBook = new Promise((resolve, reject) => {
+    if (books[isbn]) {
+      resolve(books[isbn]);
+    } else {
+      reject("Book not found");
+    }
+  })
+
+  findBook
+    .then((book) => {
+      return res.status(200).json(book);
+    })
+    .catch((err) => {
+      return res.status(404).json({ message: err });
+    })
 });
   
 // Get book details based on author
